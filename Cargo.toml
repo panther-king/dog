@@ -1,6 +1,7 @@
 [package]
+authors = ["Taro Yamashita <taro.ymst@gmail.com>"]
 name = "dog"
 version = "0.1.0"
-authors = ["Taro Yamashita <taro.ymst@gmail.com>"]
 
 [dependencies]
+getopts = "0.2.15"
