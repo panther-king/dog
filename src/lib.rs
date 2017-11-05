@@ -69,6 +69,10 @@ impl Args {
     }
 
     fn is_cli(&self) -> bool {
+        if self.args.len() == 0 {
+            return false;
+        }
+
         self.args[0] == PROGRAM_NAME
     }
 }
@@ -135,5 +139,46 @@ impl Dog {
         }
 
         foods
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn foods() -> Vec<String> {
+        vec!["a".into(), "b".into(), "c".into()]
+    }
+
+    #[test]
+    fn test_args() {
+        let args = Args::new(foods());
+
+        assert_eq!(args.args(), foods());
+    }
+
+    #[test]
+    fn test_cli_args() {
+        let mut seed = foods();
+        seed.insert(0, "dog".into());
+        let args = Args::new(seed);
+
+        assert_eq!(args.args(), foods());
+    }
+
+    #[test]
+    fn test_empty_food() {
+        let args = Args::new(vec![]);
+        let dog = Dog::foods(args);
+
+        assert!(dog.is_err());
+    }
+
+    #[test]
+    fn test_uneatable() {
+        let args = Args::new(foods());
+        let dog = Dog::foods(args).unwrap();
+
+        assert!(dog.run().is_err());
     }
 }
