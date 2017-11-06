@@ -3,6 +3,7 @@ extern crate getopts;
 use std::collections::BTreeMap;
 use std::fmt;
 use std::fs;
+use std::io::ErrorKind;
 use std::path::Path;
 use getopts::{Fail, Options};
 
@@ -28,6 +29,7 @@ impl From<Fail> for DogError {
 
 #[derive(Debug)]
 pub enum TastingError {
+    Confused,
     NotAllowed,
     NotExist,
     NotFood,
@@ -36,6 +38,7 @@ pub enum TastingError {
 impl fmt::Display for TastingError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
+            Confused => write!(f, "dog is confused"),
             NotAllowed => write!(f, "permission denied."),
             NotExist => write!(f, "does not exist."),
             NotFood => write!(f, "is not legurar-file"),
@@ -116,12 +119,23 @@ impl Dog {
     }
 
     fn taste(&self, path: &Path) -> Result<(), TastingError> {
-        match fs::metadata(path) {
-            Ok(ref m) if m.is_dir() => Err(NotFood),
-            Ok(ref m) if m.permissions().readonly() => Err(NotAllowed),
-            Err(_) => Err(NotExist),
-            _ => Ok(())
-        }
+        fs::metadata(path)
+            .map_err(|e| {
+                match e.kind() {
+                    ErrorKind::PermissionDenied => NotAllowed,
+                    ErrorKind::NotFound => NotExist,
+                    _ => Confused
+                }
+            })
+            .and_then(|m| {
+                if m.is_dir() {
+                    Err(NotFood)
+                } else if m.permissions().readonly() {
+                    Err(NotAllowed)
+                } else {
+                    Ok(())
+                }
+            })
     }
 
     fn usage(&self) -> DogResult<()> {
