@@ -105,10 +105,10 @@ impl Dog {
     pub fn foods(args: Args) -> DogResult<Dog> {
         let foods = args.args();
         if foods.is_empty() {
-            return Err(DogError::EmptyFood);
+            Err(EmptyFood)
+        } else {
+            Ok(Dog { foods: foods })
         }
-
-        Ok(Dog { foods: foods })
     }
 
     pub fn run(&self) -> DogResult<()> {
@@ -121,11 +121,10 @@ impl Dog {
         }
 
         let tasting = self.wait();
-        if tasting.len() != 0 {
-            return Err(DogError::Uneatable(tasting));
+        match tasting.len() {
+            0 => Ok(self.eat()),
+            _ => Err(Uneatable(tasting)),
         }
-
-        Ok(self.eat())
     }
 
     fn eat(&self) {
