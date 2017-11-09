@@ -10,8 +10,6 @@ use getopts::{Fail, Options};
 use self::DogError::*;
 use self::TastingError::*;
 
-const PROGRAM_NAME: &str = "dog";
-
 pub type BadFood = BTreeMap<String, TastingError>;
 pub type DogResult<T> = Result<T, DogError>;
 
@@ -91,10 +89,10 @@ impl Args {
 
     fn is_cli(&self) -> bool {
         if self.args.len() == 0 {
-            return false;
+            false
+        } else {
+            self.args[0].ends_with("dog")
         }
-
-        self.args[0] == PROGRAM_NAME
     }
 }
 
