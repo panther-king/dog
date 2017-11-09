@@ -5,12 +5,13 @@ use dog::{Args, Dog};
 
 fn main() {
     let foods = Args::new(env::args().collect());
-    let dog = Dog::foods(foods).expect("error");
 
-    match dog.run() {
-        Ok(_) => (),
+    match Dog::foods(foods) {
+        Ok(dog) => dog.run().unwrap_or_else(|e| {
+            println!("{}", e);
+        }),
         Err(e) => {
-            println!("{:?}", e);
+            println!("{}", e);
         }
     }
 }
