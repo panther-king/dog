@@ -7,6 +7,7 @@ use std::io::ErrorKind;
 use std::path::Path;
 use getopts::{Fail, Options};
 
+use self::DogError::*;
 use self::TastingError::*;
 
 const PROGRAM_NAME: &str = "dog";
@@ -24,6 +25,23 @@ pub enum DogError {
 impl From<Fail> for DogError {
     fn from(err: Fail) -> DogError {
         DogError::RunAway(err)
+    }
+}
+
+impl fmt::Display for DogError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            EmptyFood => write!(f, "No targets specified"),
+            RunAway(ref err) => write!(f, "{}", err),
+            Uneatable(ref err) => {
+                let errors = err.iter()
+                    .map(|(k, v)| {
+                        format!("{}: {}", k, v)
+                    })
+                    .collect::<Vec<String>>();
+                write!(f, "{}", errors.join("\n"))
+            }
+        }
     }
 }
 
