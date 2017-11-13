@@ -1,11 +1,8 @@
-extern crate getopts;
-
 use std::collections::BTreeMap;
 use std::fmt;
 use std::fs;
 use std::io::ErrorKind;
 use std::path::Path;
-use getopts::{Fail, Options};
 
 use self::DogError::*;
 use self::TastingError::*;
@@ -16,21 +13,13 @@ pub type DogResult<T> = Result<T, DogError>;
 #[derive(Debug)]
 pub enum DogError {
     EmptyFood,
-    RunAway(Fail),
     Uneatable(BadFood),
-}
-
-impl From<Fail> for DogError {
-    fn from(err: Fail) -> DogError {
-        DogError::RunAway(err)
-    }
 }
 
 impl fmt::Display for DogError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             EmptyFood => write!(f, "No targets specified"),
-            RunAway(ref err) => write!(f, "{}", err),
             Uneatable(ref err) => {
                 let errors = err.iter()
                     .map(|(k, v)| {
@@ -69,30 +58,16 @@ pub struct Args {
 
 impl Args {
     pub fn new(args: Vec<String>) -> Self {
-        Args { args: args }
+        let collect = args.iter()
+            .skip(1)
+            .map(|arg| arg.clone())
+            .collect();
+
+        Args { args: collect }
     }
 
     pub fn args(&self) -> Vec<String> {
-        if self.is_cli() {
-            self.args
-                .iter()
-                .skip(1)
-                .map(|arg| arg.clone())
-                .collect()
-        } else {
-            self.args
-                .iter()
-                .map(|arg| arg.clone())
-                .collect()
-        }
-    }
-
-    fn is_cli(&self) -> bool {
-        if self.args.len() == 0 {
-            false
-        } else {
-            self.args[0].ends_with("dog")
-        }
+        self.args.clone()
     }
 }
 
@@ -112,14 +87,6 @@ impl Dog {
     }
 
     pub fn run(&self) -> DogResult<()> {
-        let mut options = Options::new();
-        options.optflag("h", "help", "print this help menu");
-
-        let matches = options.parse(&self.foods)?;
-        if matches.opt_present("h") || matches.free.is_empty() {
-            return self.usage();
-        }
-
         let tasting = self.wait();
         match tasting.len() {
             0 => Ok(self.eat()),
@@ -153,10 +120,6 @@ impl Dog {
             })
     }
 
-    fn usage(&self) -> DogResult<()> {
-        Ok(())
-    }
-
     fn wait(&self) -> BTreeMap<String, TastingError> {
         let mut foods = BTreeMap::new();
         for food in self.foods.iter() {
@@ -182,17 +145,9 @@ mod tests {
     #[test]
     fn test_args() {
         let args = Args::new(foods());
+        let foods = vec!["b".to_string(), "c".to_string()];
 
-        assert_eq!(args.args(), foods());
-    }
-
-    #[test]
-    fn test_cli_args() {
-        let mut seed = foods();
-        seed.insert(0, "dog".into());
-        let args = Args::new(seed);
-
-        assert_eq!(args.args(), foods());
+        assert_eq!(args.args(), foods);
     }
 
     #[test]

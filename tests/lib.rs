@@ -19,7 +19,7 @@ fn test_single_file() {
     let filename = "test.txt";
     create(filename);
 
-    let args = Args::new(vec![filename.into()]);
+    let args = Args::new(vec!["dog".into(), filename.into()]);
     let dog = Dog::foods(args).unwrap();
 
     assert!(dog.run().is_ok());
@@ -36,7 +36,11 @@ fn test_multi_files() {
     let filename2 = "test2.txt";
     create(filename2);
 
-    let args = Args::new(vec![filename1.into(), filename2.into()]);
+    let args = Args::new(vec![
+        "dog".into(),
+        filename1.into(),
+        filename2.into()
+    ]);
     let dog = Dog::foods(args).unwrap();
 
     assert!(dog.run().is_ok());
@@ -52,7 +56,7 @@ fn test_dir() {
     let dirname = "test_dir";
     create(dirname);
 
-    let args = Args::new(vec![dirname.into()]);
+    let args = Args::new(vec!["dog".into(), dirname.into()]);
     let dog = Dog::foods(args).unwrap();
 
     assert!(dog.run().is_err());
@@ -68,7 +72,11 @@ fn test_include_dir() {
     let dirname = "test_dir2";
     create(dirname);
 
-    let args = Args::new(vec![filename.into(), dirname.into()]);
+    let args = Args::new(vec![
+        "dog".into(),
+        filename.into(),
+        dirname.into()
+    ]);
     let dog = Dog::foods(args).unwrap();
 
     assert!(dog.run().is_err());
