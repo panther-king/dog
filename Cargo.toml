@@ -3,5 +3,10 @@ authors = ["Taro Yamashita <taro.ymst@gmail.com>"]
 name = "dogrun"
 version = "0.1.0"
 
+[[bin]]
+doc = false
+name = "dog"
+path = "src/main.rs"
+
 [dependencies]
 getopts = "0.2.15"
