@@ -1,9 +1,9 @@
-extern crate dog;
+extern crate dogrun;
 
 use std::fs;
 use std::io::prelude::*;
 
-use dog::*;
+use dogrun::*;
 
 fn create(path: &str) {
     if path.contains(".") {

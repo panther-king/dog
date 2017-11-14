@@ -1,6 +1,6 @@
 [package]
 authors = ["Taro Yamashita <taro.ymst@gmail.com>"]
-name = "dog"
+name = "dogrun"
 version = "0.1.0"
 
 [dependencies]

@@ -1,12 +1,12 @@
 extern crate getopts;
 
-extern crate dog;
+extern crate dogrun;
 
 use std::{env, process};
 
 use getopts::Options;
 
-use dog::{Args, Dog};
+use dogrun::{Args, Dog};
 
 const USAGE: &'static str = "\
     USAGE:
